@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
