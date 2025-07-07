@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { supabase } from '../lib/supabase';
+import PostCard from '../components/PostCard';
 
 interface Post {
   id: string;
@@ -39,19 +40,11 @@ export default function FeedPage() {
       <main className="max-w-2xl mx-auto p-4">
         <h1 className="text-3xl font-bold mb-6">Ideas seeking teammates</h1>
         {posts.length === 0 && <p>No posts yet.</p>}
-        <ul className="space-y-4">
+        <div className="grid gap-6">
           {posts.map((post) => (
-            <li key={post.id} className="border p-4 rounded-md hover:shadow">
-              <Link href={`/post/${post.id}`} className="text-xl font-semibold hover:underline">
-                {post.title}
-              </Link>
-              <p className="text-sm text-gray-500 mt-1">
-                {new Date(post.created_at).toLocaleString()}
-              </p>
-              <p className="mt-2 whitespace-pre-line">{post.body.slice(0, 160)}{post.body.length > 160 ? '…' : ''}</p>
-            </li>
+            <PostCard key={post.id} {...post} />
           ))}
-        </ul>
+        </div>
       </main>
     </>
   );
