@@ -28,15 +28,7 @@ export default function Home() {
     try {
       console.log('Fetching posts...');
       
-      // If no user, just show empty state
-      if (!user) {
-        console.log('No user authenticated, showing empty state');
-        setPosts([]);
-        setLoading(false);
-        return;
-      }
-      
-      // Try simple query first
+      // Try to fetch posts regardless of auth status
       const { data, error } = await supabase
         .from('posts')
         .select('*')
@@ -44,8 +36,8 @@ export default function Home() {
 
       if (error) {
         console.error('Supabase error:', error);
-        // If it's an auth error, just return empty array instead of crashing
-        if (error.code === 'PGRST301' || error.message.includes('authentication')) {
+        // If it's an auth error and no user, just show empty state
+        if ((error.code === 'PGRST301' || error.message.includes('authentication')) && !user) {
           setPosts([]);
           return;
         }
@@ -166,8 +158,8 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Sign in to see ideas</h3>
-                    <p className="text-gray-600 mb-6">Join the community to discover innovative projects and connect with collaborators!</p>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">No ideas yet</h3>
+                    <p className="text-gray-600 mb-6">Be the first to share an innovative project idea! Sign in to get started.</p>
                   </>
                 )}
               </div>
