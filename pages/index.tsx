@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { supabase } from '../lib/supabase';
@@ -11,29 +11,25 @@ interface Post {
   user_id: string;
 }
 
-interface FeedPageProps {
-  posts: Post[];
-}
+export default function FeedPage() {
+  const [posts, setPosts] = useState<Post[]>([]);
 
-export const getServerSideProps: GetServerSideProps<FeedPageProps> = async () => {
-  const { data: posts = [], error } = await supabase
-    .from('posts')
-    .select('*')
-    .order('created_at', { ascending: false });
+  useEffect(() => {
+    async function load() {
+      const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching posts:', error.message);
+      } else {
+        setPosts(data ?? []);
+      }
+    }
+    load();
+  }, []);
 
-  if (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error fetching posts:', error.message);
-  }
-
-  return {
-    props: {
-      posts: posts ?? [],
-    },
-  };
-};
-
-export default function FeedPage({ posts }: FeedPageProps) {
   return (
     <>
       <Head>
