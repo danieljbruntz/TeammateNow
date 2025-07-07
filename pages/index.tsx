@@ -17,7 +17,7 @@ interface FeedPageProps {
 
 export const getServerSideProps: GetServerSideProps<FeedPageProps> = async () => {
   const { data: posts = [], error } = await supabase
-    .from<Post>('posts')
+    .from('posts')
     .select('*')
     .order('created_at', { ascending: false });
 
