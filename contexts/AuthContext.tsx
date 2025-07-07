@@ -47,10 +47,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user: session?.user ?? null,
     isLoading,
     signInWithGithub: async () => {
+      // Dynamic redirect URL based on current domain
+      const baseURL = typeof window !== 'undefined' 
+        ? (window.location.origin.includes('localhost') 
+            ? 'http://localhost:3000' 
+            : 'https://teammatenow.com')
+        : 'https://teammatenow.com';
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
-          redirectTo: `${window.location.origin}`,
+          redirectTo: baseURL,
         },
       });
       if (error) {
