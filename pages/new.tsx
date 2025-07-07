@@ -3,8 +3,9 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import ProtectedRoute from '../components/ProtectedRoute';
 
-export default function NewPostPage() {
+function NewPostContent() {
   const { user, isLoading } = useAuth();
   const router = useRouter();
   const [title, setTitle] = useState('');
@@ -62,5 +63,13 @@ export default function NewPostPage() {
         </button>
       </form>
     </main>
+  );
+}
+
+export default function NewPostPage() {
+  return (
+    <ProtectedRoute>
+      <NewPostContent />
+    </ProtectedRoute>
   );
 } 
