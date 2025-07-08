@@ -31,11 +31,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('Auth event:', event, 'Session:', newSession);
       setSession(newSession);
       setIsLoading(false);
-      
-      if (event === 'SIGNED_IN' && newSession) {
-        // User successfully signed in, redirect to home page
-        router.push('/');
-      }
     });
 
     return () => {

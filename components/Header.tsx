@@ -1,13 +1,28 @@
 import Link from 'next/link';
 import { useAuth } from '../contexts/AuthContext';
+import { useRouter } from 'next/router';
 
 export default function Header() {
   const { user, signInWithGithub, signOut } = useAuth();
+  const router = useRouter();
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          {/* Back button */}
+          {router.asPath !== '/' && (
+            <button
+              onClick={() => router.back()}
+              className="mr-4 text-gray-500 hover:text-gray-700 flex items-center"
+            >
+              <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back
+            </button>
+          )}
+
           {/* Logo and Brand */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
@@ -22,7 +37,7 @@ export default function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/browse" className="text-gray-600 hover:text-gray-900 transition-colors">
               Browse Ideas
             </Link>
             {user && (
@@ -30,8 +45,14 @@ export default function Header() {
                 Post Idea
               </Link>
             )}
-            <Link href="/about" className="text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">
               How it Works
+            </Link>
+            <Link href="/about" className="text-gray-600 hover:text-gray-900 transition-colors">
+              About
+            </Link>
+            <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition-colors">
+              Contact
             </Link>
           </nav>
 
