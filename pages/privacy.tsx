@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router';
-import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 export default function Privacy() {
@@ -7,7 +6,7 @@ export default function Privacy() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      <Header />
+      {/* Header rendered globally in _app */}
       <main className="pt-20">
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">

@@ -4,7 +4,6 @@ import Head from 'next/head';
 import { supabase } from '../lib/supabase';
 import ProtectedRoute from '../components/ProtectedRoute';
 import { useAuth } from '../contexts/AuthContext';
-import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 export const runtime = 'experimental-edge';
@@ -62,7 +61,7 @@ export default function NewPost() {
       </Head>
 
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-        <Header />
+        {/* Header rendered globally in _app */}
         <main className="pt-20">
           <div className="max-w-4xl mx-auto px-4 py-16">
             {/* Header Section */}
