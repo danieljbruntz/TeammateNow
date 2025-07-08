@@ -38,6 +38,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [router]);
 
+  useEffect(() => {
+    // Update the user's profile info (username, avatar) after we have a valid session
+    if (session?.user) {
+      const { id } = session.user;
+      const { user_name, avatar_url } = session.user.user_metadata || {};
+
+      if (user_name || avatar_url) {
+        supabase
+          .from('profiles')
+          .upsert({ id, username: user_name, avatar_url }, { onConflict: 'id' })
+          .then(({ error }) => {
+            if (error) {
+              console.error('Error upserting profile:', error);
+            }
+          });
+      }
+    }
+  }, [session]);
+
   const value: AuthContextValue = {
     user: session?.user ?? null,
     isLoading,

@@ -1,7 +1,9 @@
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import Header from '../components/Header';
 import PostCard from '../components/PostCard';
+import Footer from '../components/Footer';
 
 export const runtime = 'experimental-edge';
 
@@ -11,6 +13,10 @@ interface Post {
   body: string;
   created_at: string;
   user_id: string;
+  profiles?: {
+    username: string;
+    avatar_url?: string;
+  };
 }
 
 export default function Browse() {
@@ -24,10 +30,30 @@ export default function Browse() {
 
   async function fetchPosts() {
     try {
-      const { data, error } = await supabase
+      // Try to fetch posts with profiles first
+      let { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select(`
+          *,
+          profiles (
+            username,
+            avatar_url
+          )
+        `)
         .order('created_at', { ascending: false });
+
+      // If profile query fails, fall back to simple query
+      if (error) {
+        console.log('Profile query failed, trying simple query:', error);
+        const fallbackResult = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        data = fallbackResult.data;
+        error = fallbackResult.error;
+      }
+
       if (error) throw error;
       setPosts(data || []);
     } catch (err) {
@@ -46,7 +72,7 @@ export default function Browse() {
   return (
     <>
       <Head>
-        <title>Browse Ideas - TeammateNow</title>
+        <title>Browse Ideas - TeammateNow™</title>
         <meta name="description" content="Explore all ideas posted by the community" />
       </Head>
 
@@ -79,6 +105,7 @@ export default function Browse() {
           )}
         </div>
       </section>
+      <Footer />
     </>
   );
 } 

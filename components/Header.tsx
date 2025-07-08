@@ -1,17 +1,23 @@
 import Link from 'next/link';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'next/router';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
   const { user, signInWithGithub, signOut } = useAuth();
   const router = useRouter();
+
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Back button */}
-          {router.asPath !== '/' && (
+          {hasMounted && router.asPath !== '/' && (
             <button
               onClick={() => router.back()}
               className="mr-4 text-gray-500 hover:text-gray-700 flex items-center"
@@ -26,12 +32,14 @@ export default function Header() {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">T</span>
+              <div className="w-8 h-8 rounded-lg overflow-hidden">
+                <img 
+                  src="/Images/FINAL_CHOSEN_LARGER.png?v=1" 
+                  alt="TeammateNow™" 
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                TeammateNow
-              </span>
+              <span className="text-xl font-bold text-gray-900">TeammateNow™</span>
             </Link>
           </div>
 
@@ -40,7 +48,7 @@ export default function Header() {
             <Link href="/browse" className="text-gray-600 hover:text-gray-900 transition-colors">
               Browse Ideas
             </Link>
-            {user && (
+            {hasMounted && user && (
               <Link href="/new" className="text-gray-600 hover:text-gray-900 transition-colors">
                 Post Idea
               </Link>
@@ -58,7 +66,9 @@ export default function Header() {
 
           {/* Auth Section */}
           <div className="flex items-center space-x-4">
-            {user ? (
+            {!hasMounted ? (
+              <div className="w-32 h-8 bg-gray-200 rounded animate-pulse"></div>
+            ) : user ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
                   <img

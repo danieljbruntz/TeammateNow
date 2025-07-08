@@ -17,7 +17,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post }: PostCardProps) {
-  const { id, title, body, created_at, user_id } = post;
+  const { id, title, body, created_at, user_id, profiles } = post;
   
   return (
     <Link
@@ -26,12 +26,20 @@ export default function PostCard({ post }: PostCardProps) {
     >
       {/* Header with author info */}
       <div className="flex items-center space-x-3 mb-4">
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-          U
-        </div>
+        {profiles?.avatar_url ? (
+          <img
+            src={profiles.avatar_url}
+            alt={profiles.username || 'User'}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+            {profiles?.username ? profiles.username.charAt(0).toUpperCase() : 'U'}
+          </div>
+        )}
         <div>
           <div className="text-sm font-medium text-gray-900">
-            User
+            {profiles?.username || 'Anonymous User'}
           </div>
           <div className="text-xs text-gray-500">
             {new Date(created_at).toLocaleDateString('en-US', {

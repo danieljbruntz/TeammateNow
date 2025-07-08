@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase';
 import PostCard from '../components/PostCard';
 import { useAuth } from '../contexts/AuthContext';
 import Link from 'next/link';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export const runtime = 'experimental-edge';
 
@@ -13,12 +15,21 @@ interface Post {
   body: string;
   created_at: string;
   user_id: string;
+  profiles?: {
+    username: string;
+    avatar_url?: string;
+  };
 }
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     fetchPosts();
@@ -28,11 +39,29 @@ export default function Home() {
     try {
       console.log('Fetching posts...');
       
-      // Try to fetch posts regardless of auth status
-      const { data, error } = await supabase
+      // Try to fetch posts with profiles first
+      let { data, error } = await supabase
         .from('posts')
-        .select('*')
+        .select(`
+          *,
+          profiles (
+            username,
+            avatar_url
+          )
+        `)
         .order('created_at', { ascending: false });
+
+      // If profile query fails, fall back to simple query
+      if (error) {
+        console.log('Profile query failed, trying simple query:', error);
+        const fallbackResult = await supabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        data = fallbackResult.data;
+        error = fallbackResult.error;
+      }
 
       if (error) {
         console.error('Supabase error:', error);
@@ -58,7 +87,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>TeammateNow - Find Your Next Collaborator</title>
+        <title>TeammateNow™ - Find Your Next Collaborator</title>
         <meta name="description" content="Connect with innovators, share ideas, and build amazing projects together" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -76,7 +105,10 @@ export default function Home() {
               Turn your vision into reality with the right team.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {user ? (
+              {!hasMounted ? (
+                // Loading placeholder during hydration
+                <div className="w-40 h-14 bg-gray-200 rounded-xl animate-pulse"></div>
+              ) : user ? (
                 <Link href="/new" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg">
                   Share Your Idea
                 </Link>
@@ -145,7 +177,13 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
-                {user ? (
+                {!hasMounted ? (
+                  <div className="space-y-4">
+                    <div className="w-48 h-6 bg-gray-200 rounded mx-auto animate-pulse"></div>
+                    <div className="w-64 h-4 bg-gray-200 rounded mx-auto animate-pulse"></div>
+                    <div className="w-32 h-10 bg-gray-200 rounded mx-auto animate-pulse"></div>
+                  </div>
+                ) : user ? (
                   <>
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">No ideas yet</h3>
                     <p className="text-gray-600 mb-6">Be the first to share your innovative project idea!</p>
@@ -168,12 +206,12 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        {!user && (
+        {hasMounted && !user && (
           <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-16 px-4">
             <div className="max-w-4xl mx-auto text-center text-white">
               <h2 className="text-3xl font-bold mb-4">Ready to Start Collaborating?</h2>
               <p className="text-xl mb-8 opacity-90">
-                Join TeammateNow and connect with innovators from around the world
+                Join TeammateNow™ and connect with innovators from around the world
               </p>
               <button className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors transform hover:scale-105">
                 Sign Up with GitHub
@@ -183,24 +221,7 @@ export default function Home() {
         )}
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-white py-12 px-4">
-          <div className="max-w-6xl mx-auto text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">T</span>
-              </div>
-              <span className="text-xl font-bold">TeammateNow</span>
-            </div>
-            <p className="text-gray-400 mb-6">
-              Connecting innovators and building the future together
-            </p>
-            <div className="flex justify-center space-x-6 text-sm text-gray-400">
-              <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
-              <a href="/terms" className="hover:text-white transition-colors">Terms</a>
-              <a href="/contact" className="hover:text-white transition-colors">Contact</a>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

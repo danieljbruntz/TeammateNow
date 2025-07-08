@@ -1,5 +1,8 @@
 import Head from 'next/head';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 export const runtime = 'experimental-edge';
 
@@ -7,8 +10,8 @@ export default function HowItWorks() {
   return (
     <>
       <Head>
-        <title>How It Works - TeammateNow</title>
-        <meta name="description" content="Learn how TeammateNow helps you find collaborators and launch projects" />
+        <title>How It Works - TeammateNow™</title>
+        <meta name="description" content="Learn how TeammateNow™ helps you find collaborators and launch projects" />
       </Head>
 
       <section className="min-h-screen bg-gray-50 py-24 px-4">
@@ -16,7 +19,7 @@ export default function HowItWorks() {
           <h1 className="text-5xl font-bold text-gray-900 mb-6">How It Works</h1>
           <p className="text-xl text-gray-600 leading-relaxed mb-16 max-w-2xl mx-auto">
             Placeholder text: Explain in simple steps how users can share ideas, find collaborators, and build
-            amazing projects together on TeammateNow.
+            amazing projects together on TeammateNow™.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left">
@@ -40,6 +43,7 @@ export default function HowItWorks() {
           </div>
         </div>
       </section>
+      <Footer />
     </>
   );
 } 
